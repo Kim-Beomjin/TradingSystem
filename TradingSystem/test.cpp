@@ -18,7 +18,7 @@ public:
 class AutoTradingFixture : public Test {
 public:
 	AutoTradingSystem app;
-	AutoTradingSystem mockApp{ &mockStockBrocker };
+	AutoTradingSystem mockApp{ &mockStockBroker };
 	const string INVALID_STOCK_BROCKER = "Invalid";
 	const string KIWER_STOCK_BROCKER = "Kiwer";
 	const string NEMO_STOCK_BROCKER = "Nemo";
@@ -30,6 +30,14 @@ public:
 
 	const string INVALID_STOCK_CODE= "INVD";
 	const string VALID_STOCK_CODE = "NVDA";
+
+	const int MINIMUM_PRICE = 5000;
+	const int MAXIMUM_PRICE = 5900;
+
+	const int DECREASE_PRICES[3] = { 5900, 5500, 5000 };
+	const int INCREASE_PRICES[3] = { 5000, 5500, 5900 };
+
+	const int STOCK_BUDGET = 500000;
 
 	NiceMock<MockStockBroker> mockStockBroker;
 };
@@ -72,7 +80,7 @@ TEST_F(AutoTradingFixture, ThrowNemoBlankID) {
 }
 
 TEST_F(AutoTradingFixture, KiwerLoginFail) {
-	EXPECT_CALL(mockStockBrocker, login)
+	EXPECT_CALL(mockStockBroker, login)
 		.Times(0);
 
 	bool result = mockApp.login(NOT_IMPORTANT_ID, INVALID_PASSWORD);
@@ -81,7 +89,7 @@ TEST_F(AutoTradingFixture, KiwerLoginFail) {
 }
 
 TEST_F(AutoTradingFixture, KiwerLoginSuccess) {
-	EXPECT_CALL(mockStockBrocker, login)
+	EXPECT_CALL(mockStockBroker, login)
 		.Times(1);
 
 	bool result = mockApp.login(NOT_IMPORTANT_ID, VALID_PASSWORD);
@@ -90,7 +98,7 @@ TEST_F(AutoTradingFixture, KiwerLoginSuccess) {
 }
 
 TEST_F(AutoTradingFixture, NemoLoginFail) {
-	EXPECT_CALL(mockStockBrocker, login)
+	EXPECT_CALL(mockStockBroker, login)
 		.Times(0);
 
 	bool result = mockApp.login(NOT_IMPORTANT_ID, INVALID_PASSWORD);
@@ -99,7 +107,7 @@ TEST_F(AutoTradingFixture, NemoLoginFail) {
 }
 
 TEST_F(AutoTradingFixture, NemoLoginSuccess) {
-	EXPECT_CALL(mockStockBrocker, login)
+	EXPECT_CALL(mockStockBroker, login)
 		.Times(1);
 
 	bool result = mockApp.login(NOT_IMPORTANT_ID, VALID_PASSWORD);
@@ -138,5 +146,54 @@ TEST_F(AutoTradingFixture, ThrowInvalidSellSequence) {
 		EXPECT_EQ(string{ e.what() },
 			string{ "Invalid Sequence - Login First" });
 	}
+}
+
+TEST_F(AutoTradingFixture, NiceBuyTestPriceThreeTimes) {
+	mockApp.login(NOT_IMPORTANT_ID, VALID_PASSWORD);
+
+	EXPECT_CALL(mockStockBroker, currentPrice)
+		.Times(3);
+
+	mockApp.buyNiceTiming(VALID_STOCK_CODE, STOCK_BUDGET);
+}
+
+TEST_F(AutoTradingFixture, NiceBuyTestRepeatSamePrices) {
+	mockApp.login(NOT_IMPORTANT_ID, VALID_PASSWORD);
+
+	EXPECT_CALL(mockStockBroker, currentPrice)
+		.WillRepeatedly(Return(MINIMUM_PRICE));
+
+	EXPECT_CALL(mockStockBroker, buy)
+		.Times(0);
+
+	mockApp.buyNiceTiming(VALID_STOCK_CODE, STOCK_BUDGET);
+}
+
+TEST_F(AutoTradingFixture, NiceBuyTestDecreasePrices) {
+	mockApp.login(NOT_IMPORTANT_ID, VALID_PASSWORD);
+
+	EXPECT_CALL(mockStockBroker, currentPrice)
+		.WillOnce(Return(DECREASE_PRICES[0]))
+		.WillOnce(Return(DECREASE_PRICES[1]))
+		.WillRepeatedly(Return(DECREASE_PRICES[2]));
+
+	EXPECT_CALL(mockStockBroker, buy)
+		.Times(0);
+
+	mockApp.buyNiceTiming(VALID_STOCK_CODE, STOCK_BUDGET);
+}
+
+TEST_F(AutoTradingFixture, NiceBuyTestIncreasePrices) {
+	mockApp.login(NOT_IMPORTANT_ID, VALID_PASSWORD);
+
+	EXPECT_CALL(mockStockBroker, currentPrice)
+		.WillOnce(Return(INCREASE_PRICES[0]))
+		.WillOnce(Return(INCREASE_PRICES[1]))
+		.WillRepeatedly(Return(INCREASE_PRICES[2]));
+
+	EXPECT_CALL(mockStockBroker, buy)
+		.Times(1);
+
+	mockApp.buyNiceTiming(VALID_STOCK_CODE, STOCK_BUDGET);
 }
 
