@@ -87,7 +87,7 @@ public:
 	}
 
 	int currentPrice(std::string stockCode) override {
-		return getMarketPrice(stockCode, 200);
+		return nemoAPI.getMarketPrice(stockCode, 200);
 	}
 
 	bool getLoggedIn(void) override
@@ -147,7 +147,7 @@ public:
 		{
 			return price;
 		}
-		stockBroker->currentPrice(stockCode);
+		price = stockBroker->currentPrice(stockCode);
 		return price;
 	}
 	void buy(std::string stockCode, int count, int price)
@@ -226,6 +226,7 @@ private:
 		}
 
 		return true;
+	}
 protected:
 	StockBroker* stockBroker;
 };
