@@ -25,7 +25,8 @@ public:
 	}
 
 	int currentPrice(std::string stockCode) override {
-		return 0;
+		Sleep(200);
+		return KiwerAPI::currentPrice(stockCode);
 	}
 };
 
@@ -44,7 +45,7 @@ public:
 	}
 
 	int currentPrice(std::string stockCode) override {
-		return 0;
+		return getMarketPrice(stockCode, 200);
 	}
 };
 
@@ -84,36 +85,43 @@ public:
 		return true;
 	}
 	void buy(std::string stockCode, int count, int price);
+
 	int currentPrice(std::string stockCode)
 	{
-		return 0;
+		return stockBroker->currentPrice(stockCode);
 	}
 
 	void buyNiceTiming(std::string stockCode, int budget)
 	{
-		int curPrice = currentPrice(stockCode);
+		int timeStampMs = 0;
 
-		historyPrice.push_back(curPrice);
+		do {
+			int curPrice = currentPrice(stockCode);
 
-		if (historyPrice.size() < 3)
-			return;
+			historyPrice.push_back(curPrice);
 
-		if (historyPrice.size() > 3)
-			historyPrice.erase(historyPrice.begin());
+			if (historyPrice.size() < 3)
+				return;
 
-		int prevPrice = 0, increaseCnt = 0;
-		for (int price : historyPrice) {
-			if (price > prevPrice) {
-				prevPrice = price;
-				increaseCnt++;
+			if (historyPrice.size() > 3)
+				historyPrice.erase(historyPrice.begin());
+
+			int prevPrice = 0, increaseCnt = 0;
+			for (int price : historyPrice) {
+				if (price > prevPrice) {
+					prevPrice = price;
+					increaseCnt++;
+				}
+				else
+					break;
 			}
-			else
-				break;
-		}
 
-		if (increaseCnt == 3) {
-			buy(stockCode, budget / curPrice, curPrice);
-		}
+			if (increaseCnt == 3) {
+				buy(stockCode, budget / curPrice, curPrice);
+			}
+
+			timeStampMs += 200;
+		} while (timeStampMs < 600);
 	}
 protected:
 	StockBroker* stockBroker;
