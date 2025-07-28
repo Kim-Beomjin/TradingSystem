@@ -84,7 +84,14 @@ public:
 		stockBroker->login(ID, password);
 		return true;
 	}
-	void buy(std::string stockCode, int count, int price);
+	void buy(std::string stockCode, int count, int price)
+	{
+		stockBroker->buy(stockCode, count, price);
+	}
+	void sell(std::string stockCode, int count, int price)
+	{
+		stockBroker->sell(stockCode, count, price);
+	}
 
 	int currentPrice(std::string stockCode)
 	{
@@ -98,10 +105,11 @@ public:
 		do {
 			int curPrice = currentPrice(stockCode);
 
+			timeStampMs += 200;
 			historyPrice.push_back(curPrice);
 
 			if (historyPrice.size() < 3)
-				return;
+				continue;
 
 			if (historyPrice.size() > 3)
 				historyPrice.erase(historyPrice.begin());
@@ -119,8 +127,6 @@ public:
 			if (increaseCnt == 3) {
 				buy(stockCode, budget / curPrice, curPrice);
 			}
-
-			timeStampMs += 200;
 		} while (timeStampMs < 600);
 	}
 protected:
