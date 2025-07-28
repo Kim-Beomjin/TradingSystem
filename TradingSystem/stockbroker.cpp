@@ -12,8 +12,8 @@ interface StockBroker {
 class KiwerStockBroker : public StockBroker, public KiwerAPI {
 public:
 	void login(std::string ID, std::string password) override {
-
-	}
+		login(ID, password);
+	}	
 
 	void buy(std::string stockCode, int count, int price) override {
 
@@ -31,7 +31,7 @@ public:
 class NemoStockBroker : public StockBroker, public NemoAPI {
 public:
 	void login(std::string ID, std::string password) override {
-
+		certification(ID, password);
 	}
 
 	void buy(std::string stockCode, int count, int price) override {
@@ -49,6 +49,9 @@ public:
 
 class AutoTradingSystem {
 public:
+	AutoTradingSystem(): stockBroker(nullptr) {}
+	AutoTradingSystem(StockBroker* broker) : stockBroker(broker) {}
+
 	void selectStockBrocker(std::string brokerName) {
 		if (brokerName == "Kiwer") {
 			stockBroker = new KiwerStockBroker();
@@ -57,7 +60,6 @@ public:
 		} else {
 			throw std::runtime_error("Invalid stock broker selection");
 		}
-		stockBroker = nullptr;
 	}
 
 	void setStockBroker(StockBroker* broker) {
@@ -67,6 +69,25 @@ public:
 		stockBroker = broker;
 	}
 
-private:
+	bool login(std::string ID, std::string password) {
+		if (stockBroker == nullptr) {
+			throw std::runtime_error("Stock broker not selected");
+		}
+		if (ID.empty()) {
+			throw std::runtime_error("Invalid ID");
+		}
+		if (password.empty()) {
+			return false;
+		}
+		stockBroker->login(ID, password);
+		return true;
+	}
+	void buy(std::string stockCode, int count, int price);
+	int currentPrice(std::string stockCode)
+	{
+		return 0;
+	}
+
+protected:
 	StockBroker* stockBroker;
 };
