@@ -38,6 +38,7 @@ public:
 	const int INCREASE_PRICES[3] = { 5000, 5500, 5900 };
 
 	const int STOCK_BUDGET = 500000;
+	const int TARGET_STOCK_COUNT = 10;
 
 	NiceMock<MockStockBroker> mockStockBroker;
 };
@@ -197,3 +198,51 @@ TEST_F(AutoTradingFixture, NiceBuyTestIncreasePrices) {
 	mockApp.buyNiceTiming(VALID_STOCK_CODE, STOCK_BUDGET);
 }
 
+TEST_F(AutoTradingFixture, NiceSellTestPriceThreeTimes) {
+	mockApp.login(NOT_IMPORTANT_ID, VALID_PASSWORD);
+
+	EXPECT_CALL(mockStockBroker, currentPrice)
+		.Times(3);
+
+	mockApp.sellNiceTiming(VALID_STOCK_CODE, TARGET_STOCK_COUNT);
+}
+
+TEST_F(AutoTradingFixture, NiceSellTestRepeatSamePrices) {
+	mockApp.login(NOT_IMPORTANT_ID, VALID_PASSWORD);
+
+	EXPECT_CALL(mockStockBroker, currentPrice)
+		.WillRepeatedly(Return(MAXIMUM_PRICE));
+
+	EXPECT_CALL(mockStockBroker, sell)
+		.Times(0);
+
+	mockApp.sellNiceTiming(VALID_STOCK_CODE, TARGET_STOCK_COUNT);
+}
+
+TEST_F(AutoTradingFixture, NiceSellTestIncreasePrices) {
+	mockApp.login(NOT_IMPORTANT_ID, VALID_PASSWORD);
+
+	EXPECT_CALL(mockStockBroker, currentPrice)
+		.WillOnce(Return(INCREASE_PRICES[0]))
+		.WillOnce(Return(INCREASE_PRICES[1]))
+		.WillRepeatedly(Return(INCREASE_PRICES[2]));
+
+	EXPECT_CALL(mockStockBroker, sell)
+		.Times(0);
+
+	mockApp.sellNiceTiming(VALID_STOCK_CODE, TARGET_STOCK_COUNT);
+}
+
+TEST_F(AutoTradingFixture, NiceSellTestDecreasePrices) {
+	mockApp.login(NOT_IMPORTANT_ID, VALID_PASSWORD);
+
+	EXPECT_CALL(mockStockBroker, currentPrice)
+		.WillOnce(Return(DECREASE_PRICES[0]))
+		.WillOnce(Return(DECREASE_PRICES[1]))
+		.WillRepeatedly(Return(DECREASE_PRICES[2]));
+
+	EXPECT_CALL(mockStockBroker, sell)
+		.Times(1);
+
+	mockApp.sellNiceTiming(VALID_STOCK_CODE, TARGET_STOCK_COUNT);
+}
