@@ -157,100 +157,100 @@ TEST_F(AutoTradingFixture, ThrowInvalidSellSequence) {
 	}
 }
 
-//TEST_F(AutoTradingFixture, NiceBuyTestPriceThreeTimes) {
-//	mockApp.login(NOT_IMPORTANT_ID, VALID_PASSWORD);
-//
-//	EXPECT_CALL(mockStockBroker, currentPrice)
-//		.Times(3);
-//
-//	mockApp.buyNiceTiming(VALID_STOCK_CODE, STOCK_BUDGET);
-//}
-//
-//TEST_F(AutoTradingFixture, NiceBuyTestRepeatSamePrices) {
-//	mockApp.login(NOT_IMPORTANT_ID, VALID_PASSWORD);
-//
-//	EXPECT_CALL(mockStockBroker, currentPrice)
-//		.WillRepeatedly(Return(MINIMUM_PRICE));
-//
-//	EXPECT_CALL(mockStockBroker, buy)
-//		.Times(0);
-//
-//	mockApp.buyNiceTiming(VALID_STOCK_CODE, STOCK_BUDGET);
-//}
-//
-//TEST_F(AutoTradingFixture, NiceBuyTestDecreasePrices) {
-//	mockApp.login(NOT_IMPORTANT_ID, VALID_PASSWORD);
-//
-//	EXPECT_CALL(mockStockBroker, currentPrice)
-//		.WillOnce(Return(DECREASE_PRICES[0]))
-//		.WillOnce(Return(DECREASE_PRICES[1]))
-//		.WillRepeatedly(Return(DECREASE_PRICES[2]));
-//
-//	EXPECT_CALL(mockStockBroker, buy)
-//		.Times(0);
-//
-//	mockApp.buyNiceTiming(VALID_STOCK_CODE, STOCK_BUDGET);
-//}
-//
-//TEST_F(AutoTradingFixture, NiceBuyTestIncreasePrices) {
-//	mockApp.login(NOT_IMPORTANT_ID, VALID_PASSWORD);
-//
-//	EXPECT_CALL(mockStockBroker, currentPrice)
-//		.WillOnce(Return(INCREASE_PRICES[0]))
-//		.WillOnce(Return(INCREASE_PRICES[1]))
-//		.WillRepeatedly(Return(INCREASE_PRICES[2]));
-//
-//	EXPECT_CALL(mockStockBroker, buy)
-//		.Times(1);
-//
-//	mockApp.buyNiceTiming(VALID_STOCK_CODE, STOCK_BUDGET);
-//}
-//
-//TEST_F(AutoTradingFixture, NiceSellTestPriceThreeTimes) {
-//	mockApp.login(NOT_IMPORTANT_ID, VALID_PASSWORD);
-//
-//	EXPECT_CALL(mockStockBroker, currentPrice)
-//		.Times(3);
-//
-//	mockApp.sellNiceTiming(VALID_STOCK_CODE, TARGET_STOCK_COUNT);
-//}
-//
-//TEST_F(AutoTradingFixture, NiceSellTestRepeatSamePrices) {
-//	mockApp.login(NOT_IMPORTANT_ID, VALID_PASSWORD);
-//
-//	EXPECT_CALL(mockStockBroker, currentPrice)
-//		.WillRepeatedly(Return(MAXIMUM_PRICE));
-//
-//	EXPECT_CALL(mockStockBroker, sell)
-//		.Times(0);
-//
-//	mockApp.sellNiceTiming(VALID_STOCK_CODE, TARGET_STOCK_COUNT);
-//}
-//
-//TEST_F(AutoTradingFixture, NiceSellTestIncreasePrices) {
-//	mockApp.login(NOT_IMPORTANT_ID, VALID_PASSWORD);
-//
-//	EXPECT_CALL(mockStockBroker, currentPrice)
-//		.WillOnce(Return(INCREASE_PRICES[0]))
-//		.WillOnce(Return(INCREASE_PRICES[1]))
-//		.WillRepeatedly(Return(INCREASE_PRICES[2]));
-//
-//	EXPECT_CALL(mockStockBroker, sell)
-//		.Times(0);
-//
-//	mockApp.sellNiceTiming(VALID_STOCK_CODE, TARGET_STOCK_COUNT);
-//}
-//
-//TEST_F(AutoTradingFixture, NiceSellTestDecreasePrices) {
-//	mockApp.login(NOT_IMPORTANT_ID, VALID_PASSWORD);
-//
-//	EXPECT_CALL(mockStockBroker, currentPrice)
-//		.WillOnce(Return(DECREASE_PRICES[0]))
-//		.WillOnce(Return(DECREASE_PRICES[1]))
-//		.WillRepeatedly(Return(DECREASE_PRICES[2]));
-//
-//	EXPECT_CALL(mockStockBroker, sell)
-//		.Times(1);
-//
-//	mockApp.sellNiceTiming(VALID_STOCK_CODE, TARGET_STOCK_COUNT);
-//}
+TEST_F(AutoTradingFixture, NiceBuyTestPriceThreeTimes) {
+	mockApp.login(NOT_IMPORTANT_ID, VALID_PASSWORD);
+
+	EXPECT_CALL(mockStockBroker, currentPrice)
+		.Times(3);
+
+	mockApp.buyNiceTiming(VALID_STOCK_CODE, STOCK_BUDGET);
+}
+
+TEST_F(AutoTradingFixture, NiceBuyTestRepeatSamePrices) {
+	mockApp.login(NOT_IMPORTANT_ID, VALID_PASSWORD);
+
+	EXPECT_CALL(mockStockBroker, currentPrice)
+		.WillRepeatedly(Return(MINIMUM_PRICE));
+
+	EXPECT_CALL(mockStockBroker, buy)
+		.Times(0);
+
+	mockApp.buyNiceTiming(VALID_STOCK_CODE, STOCK_BUDGET);
+}
+
+TEST_F(AutoTradingFixture, NiceBuyTestDecreasePrices) {
+	mockApp.login(NOT_IMPORTANT_ID, VALID_PASSWORD);
+
+	EXPECT_CALL(mockStockBroker, currentPrice)
+		.WillOnce(Return(DECREASE_PRICES[0]))
+		.WillOnce(Return(DECREASE_PRICES[1]))
+		.WillRepeatedly(Return(DECREASE_PRICES[2]));
+
+	EXPECT_CALL(mockStockBroker, buy)
+		.Times(0);
+
+	mockApp.buyNiceTiming(VALID_STOCK_CODE, STOCK_BUDGET);
+}
+
+TEST_F(AutoTradingFixture, NiceBuyTestIncreasePrices) {
+	mockApp.login(NOT_IMPORTANT_ID, VALID_PASSWORD);
+
+	EXPECT_CALL(mockStockBroker, currentPrice)
+		.WillOnce(Return(INCREASE_PRICES[0]))
+		.WillOnce(Return(INCREASE_PRICES[1]))
+		.WillRepeatedly(Return(INCREASE_PRICES[2]));
+
+	EXPECT_CALL(mockStockBroker, buy)
+		.Times(1);
+
+	mockApp.buyNiceTiming(VALID_STOCK_CODE, STOCK_BUDGET);
+}
+
+TEST_F(AutoTradingFixture, NiceSellTestPriceThreeTimes) {
+	mockApp.login(NOT_IMPORTANT_ID, VALID_PASSWORD);
+
+	EXPECT_CALL(mockStockBroker, currentPrice)
+		.Times(3);
+
+	mockApp.sellNiceTiming(VALID_STOCK_CODE, TARGET_STOCK_COUNT);
+}
+
+TEST_F(AutoTradingFixture, NiceSellTestRepeatSamePrices) {
+	mockApp.login(NOT_IMPORTANT_ID, VALID_PASSWORD);
+
+	EXPECT_CALL(mockStockBroker, currentPrice)
+		.WillRepeatedly(Return(MAXIMUM_PRICE));
+
+	EXPECT_CALL(mockStockBroker, sell)
+		.Times(0);
+
+	mockApp.sellNiceTiming(VALID_STOCK_CODE, TARGET_STOCK_COUNT);
+}
+
+TEST_F(AutoTradingFixture, NiceSellTestIncreasePrices) {
+	mockApp.login(NOT_IMPORTANT_ID, VALID_PASSWORD);
+
+	EXPECT_CALL(mockStockBroker, currentPrice)
+		.WillOnce(Return(INCREASE_PRICES[0]))
+		.WillOnce(Return(INCREASE_PRICES[1]))
+		.WillRepeatedly(Return(INCREASE_PRICES[2]));
+
+	EXPECT_CALL(mockStockBroker, sell)
+		.Times(0);
+
+	mockApp.sellNiceTiming(VALID_STOCK_CODE, TARGET_STOCK_COUNT);
+}
+
+TEST_F(AutoTradingFixture, NiceSellTestDecreasePrices) {
+	mockApp.login(NOT_IMPORTANT_ID, VALID_PASSWORD);
+
+	EXPECT_CALL(mockStockBroker, currentPrice)
+		.WillOnce(Return(DECREASE_PRICES[0]))
+		.WillOnce(Return(DECREASE_PRICES[1]))
+		.WillRepeatedly(Return(DECREASE_PRICES[2]));
+
+	EXPECT_CALL(mockStockBroker, sell)
+		.Times(1);
+
+	mockApp.sellNiceTiming(VALID_STOCK_CODE, TARGET_STOCK_COUNT);
+}

@@ -74,7 +74,6 @@ public:
 			std::cout << "Nemo login failed\n";
 			return false;
 		}
-		setLoggedIn();
 	}
 
 	void buy(std::string stockCode, int count, int price) override {
