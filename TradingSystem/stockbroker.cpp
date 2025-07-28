@@ -120,13 +120,6 @@ public:
 		}
 	}
 
-	void setStockBroker(StockBroker* broker) {
-		if (stockBroker != nullptr) {
-			delete stockBroker;
-		}
-		stockBroker = broker;
-	}
-
 	bool login(std::string ID, std::string password) {
 		if (stockBroker == nullptr) {
 			throw std::runtime_error("Stock broker not selected");
@@ -140,16 +133,16 @@ public:
 
 		return stockBroker->login(ID, password);
 	}
+
 	int currentPrice(std::string stockCode)
 	{
-		int price = 0;
 		if (isValidRequestWithoutLogin(stockCode) == false)
 		{
-			return price;
+			return 0;
 		}
-		price = stockBroker->currentPrice(stockCode);
-		return price;
+		return stockBroker->currentPrice(stockCode);
 	}
+
 	void buy(std::string stockCode, int count, int price)
 	{
 		if (isValidRequestWithLogin(stockCode) == false) {
@@ -158,6 +151,7 @@ public:
 		stockBroker->buy(stockCode, count, price);
 		return;
 	}
+
 	void sell(std::string stockCode, int count, int price)
 	{
 		if (isValidRequestWithLogin(stockCode) == false)
@@ -200,6 +194,7 @@ public:
 			}
 		} while (timeStampMs < 600);
 	}
+
 private:
 	bool isValidRequestWithoutLogin(std::string stockCode)
 	{
@@ -227,6 +222,7 @@ private:
 
 		return true;
 	}
+
 protected:
 	StockBroker* stockBroker;
 };
