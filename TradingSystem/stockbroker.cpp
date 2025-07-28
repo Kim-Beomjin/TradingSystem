@@ -77,11 +77,11 @@ public:
 	}
 
 	void buy(std::string stockCode, int count, int price) override {
-		nemoAPI.purchasingStock(stockCode, count, price);
+		nemoAPI.purchasingStock(stockCode, price, count);
 	}
 
 	void sell(std::string stockCode, int count, int price) override {
-		nemoAPI.sellingStock(stockCode, count, price);
+		nemoAPI.sellingStock(stockCode, price, count);
 	}
 
 	int currentPrice(std::string stockCode) override {
