@@ -9,7 +9,7 @@ class MockStockBroker : public StockBroker {
 
 public:
 	MOCK_METHOD(bool, login, (string ID, string password), (override));
-	MOCK_METHOD(void, buy, (string stockCode, int count, int price), (override));
+	MOCK_METHOD(bool, buy, (string stockCode, int count, int price), (override));
 	MOCK_METHOD(void, sell, (string stockCode, int count, int price), (override));
 	MOCK_METHOD(int, currentPrice, (string stockCode), (override));
 	MOCK_METHOD(bool, getLoggedIn, (), (override));
@@ -124,6 +124,61 @@ TEST_F(AutoTradingFixture, MockLoginSuccess) {
 	EXPECT_EQ(true, result);
 }
 
+TEST_F(AutoTradingFixture, ThrowEmptyStockCodeWhenBuy) {
+	mockApp.login(NOT_IMPORTANT_ID, VALID_PASSWORD);
+
+	try {
+		bool result = mockApp.buy("", TARGET_STOCK_COUNT, MINIMUM_PRICE);
+		FAIL();
+	}
+	catch(runtime_error &e) {
+		EXPECT_EQ(string{ e.what() },
+			string{ "Empty Stock Code" });
+	}
+}
+
+TEST_F(AutoTradingFixture, MockBuyFail) {
+	mockApp.login(NOT_IMPORTANT_ID, VALID_PASSWORD);
+
+	EXPECT_CALL(mockStockBroker, buy)
+		.WillOnce(Return(false));
+
+	bool result = mockApp.buy(VALID_STOCK_CODE, TARGET_STOCK_COUNT, MINIMUM_PRICE);
+
+	EXPECT_EQ(false, result);
+}
+
+TEST_F(AutoTradingFixture, MockBuySuccess) {
+	mockApp.login(NOT_IMPORTANT_ID, VALID_PASSWORD);
+	EXPECT_CALL(mockStockBroker, currentPrice)
+		.WillOnce(Return(MAXIMUM_PRICE));
+
+	EXPECT_CALL(mockStockBroker, buy)
+		.WillRepeatedly(Return(true));
+
+	bool result = mockApp.buy(VALID_STOCK_CODE, TARGET_STOCK_COUNT, mockStockBroker.currentPrice(VALID_STOCK_CODE));
+
+	EXPECT_EQ(true, result);
+}
+
+TEST_F(AutoTradingFixture, KiwerBuy) {
+	app.selectStockBrocker(KIWER_STOCK_BROCKER);
+	app.login(NOT_IMPORTANT_ID, VALID_PASSWORD);
+
+	bool result = app.buy(VALID_STOCK_CODE, TARGET_STOCK_COUNT, MAXIMUM_PRICE);
+
+	EXPECT_EQ(true, result);
+}
+
+TEST_F(AutoTradingFixture, NemoBuy) {
+	app.selectStockBrocker(NEMO_STOCK_BROCKER);
+	app.login(NOT_IMPORTANT_ID, VALID_PASSWORD);
+
+	bool result = app.buy(VALID_STOCK_CODE, TARGET_STOCK_COUNT, MAXIMUM_PRICE);
+
+	EXPECT_EQ(true, result);
+}
+
 TEST_F(AutoTradingFixture, ThrowInvalidStockCode) {
 	try {
 		mockApp.currentPrice(INVALID_STOCK_CODE);
@@ -137,7 +192,7 @@ TEST_F(AutoTradingFixture, ThrowInvalidStockCode) {
 
 TEST_F(AutoTradingFixture, ThrowInvalidBuySequence) {
 	try {
-		mockApp.buy(VALID_STOCK_CODE, 1, 100);
+		mockApp.buy(VALID_STOCK_CODE, TARGET_STOCK_COUNT, MINIMUM_PRICE);
 		FAIL();
 	}
 	catch (runtime_error& e) {
