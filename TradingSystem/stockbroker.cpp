@@ -2,19 +2,33 @@
 #include "nemo_api.cpp"
 #include <exception>
 #include <vector>
+#include <sstream>
 
 interface StockBroker {
-	virtual void login(std::string ID, std::string password) = 0;
+	virtual bool login(std::string ID, std::string password) = 0;
 	virtual void buy(std::string stockCode, int count, int price) = 0;
 	virtual void sell(std::string stockCode, int count, int price) = 0;
 	virtual int currentPrice(std::string stockCode) = 0;
 };
 
-class KiwerStockBroker : public StockBroker, public KiwerAPI {
+class KiwerStockBroker : public StockBroker {
 public:
-	void login(std::string ID, std::string password) override {
-		login(ID, password);
-	}	
+	bool login(std::string ID, std::string password) override {
+		std::ostringstream oss = {};
+		auto oldCoutStreamBuf = std::cout.rdbuf();
+		std::cout.rdbuf(oss.rdbuf());
+
+		kiwerAPI.login(ID, password);
+		if (oss.str().find("login success") != std::string::npos) {
+			std::cout.rdbuf(oldCoutStreamBuf);
+			std::cout << "Kiwer login success\n";
+			return true;
+		} else {
+			std::cout.rdbuf(oldCoutStreamBuf);
+			std::cout << "Kiwer login failed\n";
+			return false;
+		}
+	}
 
 	void buy(std::string stockCode, int count, int price) override {
 
@@ -28,12 +42,27 @@ public:
 		Sleep(200);
 		return KiwerAPI::currentPrice(stockCode);
 	}
+private:
+	KiwerAPI kiwerAPI;
 };
 
-class NemoStockBroker : public StockBroker, public NemoAPI {
+class NemoStockBroker : public StockBroker {
 public:
-	void login(std::string ID, std::string password) override {
-		certification(ID, password);
+	bool login(std::string ID, std::string password) override {
+		std::ostringstream oss = {};
+		auto oldCoutStreamBuf = std::cout.rdbuf();
+		std::cout.rdbuf(oss.rdbuf());
+
+		nemoAPI.certification(ID, password);
+		if (oss.str().find("login GOOD") != std::string::npos) {
+			std::cout.rdbuf(oldCoutStreamBuf);
+			std::cout << "Nemo login success\n";
+			return true;
+		} else {
+			std::cout.rdbuf(oldCoutStreamBuf);
+			std::cout << "Nemo login failed\n";
+			return false;
+		}
 	}
 
 	void buy(std::string stockCode, int count, int price) override {
@@ -47,6 +76,8 @@ public:
 	int currentPrice(std::string stockCode) override {
 		return getMarketPrice(stockCode, 200);
 	}
+private:
+	NemoAPI nemoAPI;
 };
 
 class AutoTradingSystem {
@@ -81,8 +112,8 @@ public:
 		if (password.empty()) {
 			return false;
 		}
-		stockBroker->login(ID, password);
-		return true;
+
+		return stockBroker->login(ID, password);
 	}
 	void buy(std::string stockCode, int count, int price)
 	{
