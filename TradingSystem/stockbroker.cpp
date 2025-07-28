@@ -33,15 +33,15 @@ public:
 	}
 
 	void buy(std::string stockCode, int count, int price) override {
-		buy(stockCode, count, price);
+		kiwerAPI.buy(stockCode, count, price);
 	}
 
 	void sell(std::string stockCode, int count, int price) override {
-		sell(stockCode, count, price);
+		kiwerAPI.sell(stockCode, count, price);
 	}
 
 	int currentPrice(std::string stockCode) override {
-		return currentPrice(stockCode);
+		return kiwerAPI.currentPrice(stockCode);
 	}
 
 	bool getLoggedIn(void) override {
@@ -52,7 +52,7 @@ private:
 	void setLoggedIn(void) override {
 		loggedIn = true;
 	}
-	bool loggedIn;
+	bool loggedIn = false;
 	KiwerAPI kiwerAPI;
 };
 
@@ -78,15 +78,15 @@ public:
 	}
 
 	void buy(std::string stockCode, int count, int price) override {
-		buy(stockCode, count, price);
+		nemoAPI.purchasingStock(stockCode, count, price);
 	}
 
 	void sell(std::string stockCode, int count, int price) override {
-		sell(stockCode, count, price);
+		nemoAPI.sellingStock(stockCode, count, price);
 	}
 
 	int currentPrice(std::string stockCode) override {
-		return currentPrice(stockCode);
+		return nemoAPI.getMarketPrice(stockCode, 1);
 	}
 
 	bool getLoggedIn(void) override
@@ -100,7 +100,7 @@ private:
 		loggedIn = true;
 	}
 
-	bool loggedIn;
+	bool loggedIn = false;
 	NemoAPI nemoAPI;
 };
 
