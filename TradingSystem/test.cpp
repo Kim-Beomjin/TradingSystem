@@ -189,7 +189,6 @@ TEST_F(AutoTradingFixture, ThrowInvalidStockCode) {
 			string{ "Invalid Stock Code" });
 	}
 }
-
 TEST_F(AutoTradingFixture, ThrowInvalidBuySequence) {
 	try {
 		mockApp.buy(VALID_STOCK_CODE, TARGET_STOCK_COUNT, MINIMUM_PRICE);

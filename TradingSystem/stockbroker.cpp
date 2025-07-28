@@ -4,6 +4,9 @@
 #include <vector>
 #include <sstream>
 #include <unordered_map>
+#include <chrono>
+#include <string>
+
 
 interface StockBroker {
 	StockBroker() : currentID(""), stockPriceMapForID{} {}
@@ -11,6 +14,7 @@ interface StockBroker {
 	virtual bool buy(std::string stockCode, int count, int price) = 0;
 	virtual void sell(std::string stockCode, int count, int price) = 0;
 	virtual int currentPrice(std::string stockCode) = 0;
+	virtual bool getLoggedIn(void) = 0;
 protected:
 	std::unordered_map<std::string, std::pair<int, int>> getStockPriceMapForID(std::string ID) {
 		if (stockPriceMapForID.find(ID) == stockPriceMapForID.end()) {
@@ -28,7 +32,6 @@ protected:
 
 	std::string currentID;
 	std::unordered_map<std::string, std::unordered_map<std::string, std::pair<int, int>>> stockPriceMapForID;
-	virtual bool getLoggedIn(void) = 0;
 	virtual void setLoggedIn(void) = 0;
 };
 
@@ -215,14 +218,6 @@ public:
 		price = stockBroker->currentPrice(stockCode);
 		return price;
 	}
-	void buy(std::string stockCode, int count, int price)
-	{
-		if (isValidRequestWithLogin(stockCode) == false) {
-			return;
-		}
-		stockBroker->buy(stockCode, count, price);
-		return;
-	}
 	void sell(std::string stockCode, int count, int price)
 	{
 		if (isValidRequestWithLogin(stockCode) == false)
@@ -235,35 +230,53 @@ public:
 
 	void buyNiceTiming(std::string stockCode, int budget)
 	{
+		if (stockBroker == nullptr) {
+			throw std::runtime_error("Stock broker not selected");
+		}
+		if (stockCode.empty()) {
+			throw std::runtime_error("Invalid stock code");
+		}
+		if (budget <= 0) {
+			throw std::runtime_error("Invalid budget");
+		}
 		std::vector<int> historyPrice;
 		int timeStampMs = 0;
-
-		do {
-			int curPrice = currentPrice(stockCode);
-
-			timeStampMs += 200;
+		int curPrice = 0, prevPrice = 0, increaseCnt = 0;;
+		for (int i = 0; i < PRICE_CHECK_COUNT; i++) {
+			curPrice = currentPrice(stockCode);
 			historyPrice.push_back(curPrice);
-
-			if (historyPrice.size() < 3)
-				continue;
-
-			if (historyPrice.size() > 3)
-				historyPrice.erase(historyPrice.begin());
-
-			int prevPrice = 0, increaseCnt = 0;
-			for (int price : historyPrice) {
-				if (price > prevPrice) {
-					prevPrice = price;
-					increaseCnt++;
-				}
-				else
-					break;
+		}
+		for (int i = 1; i < PRICE_CHECK_COUNT; i++) {
+			if (historyPrice[i] <= historyPrice[i - 1]) {
+				return;
 			}
-
-			if (increaseCnt == 3) {
-				buy(stockCode, budget / curPrice, curPrice);
+		}
+		stockBroker->buy(stockCode, budget / curPrice, curPrice);
+	}
+	void sellNiceTiming(std::string stockCode, int stockCount)
+	{
+		if (stockBroker == nullptr) {
+			throw std::runtime_error("Stock broker not selected");
+		}
+		if (stockCode.empty()) {
+			throw std::runtime_error("Invalid stock code");
+		}
+		if (stockCount <= 0) {
+			throw std::runtime_error("Invalid stock count");
+		}
+		std::vector<int> historyPrice;
+		int curPrice = 0;
+		for (int i = 0; i < PRICE_CHECK_COUNT; i++)
+		{
+			curPrice = stockBroker->currentPrice(stockCode);
+			historyPrice.push_back(curPrice);
+		}
+		for (int i = 1; i < PRICE_CHECK_COUNT; i++) {
+			if (historyPrice[i] >= historyPrice[i - 1]) {
+				return;
 			}
-		} while (timeStampMs < 600);
+		}
+		stockBroker->sell(stockCode, stockCount, curPrice);
 	}
 private:
 	bool isValidRequestWithoutLogin(std::string stockCode)
@@ -294,4 +307,5 @@ private:
 	}
 protected:
 	StockBroker* stockBroker;
+	const int PRICE_CHECK_COUNT = 3;
 };
