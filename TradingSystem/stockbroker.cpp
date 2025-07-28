@@ -9,6 +9,8 @@ interface StockBroker {
 	virtual void buy(std::string stockCode, int count, int price) = 0;
 	virtual void sell(std::string stockCode, int count, int price) = 0;
 	virtual int currentPrice(std::string stockCode) = 0;
+	virtual bool getLoggedIn(void) = 0;
+	virtual void setLoggedIn(void) = 0;
 };
 
 class KiwerStockBroker : public StockBroker {
@@ -21,6 +23,7 @@ public:
 		kiwerAPI.login(ID, password);
 		if (oss.str().find("login success") != std::string::npos) {
 			std::cout.rdbuf(oldCoutStreamBuf);
+			setLoggedIn();
 			std::cout << "Kiwer login success\n";
 			return true;
 		} else {
@@ -31,18 +34,27 @@ public:
 	}
 
 	void buy(std::string stockCode, int count, int price) override {
-
+		kiwerAPI.buy(stockCode, count, price);
 	}
 
 	void sell(std::string stockCode, int count, int price) override {
-
+		kiwerAPI.sell(stockCode, count, price);
 	}
 
 	int currentPrice(std::string stockCode) override {
 		Sleep(200);
-		return KiwerAPI::currentPrice(stockCode);
+		return kiwerAPI.currentPrice(stockCode);
 	}
+
+	bool getLoggedIn(void) override {
+		return loggedIn;
+	}
+
 private:
+	void setLoggedIn(void) override {
+		loggedIn = true;
+	}
+	bool loggedIn = false;
 	KiwerAPI kiwerAPI;
 };
 
@@ -57,6 +69,7 @@ public:
 		if (oss.str().find("login GOOD") != std::string::npos) {
 			std::cout.rdbuf(oldCoutStreamBuf);
 			std::cout << "Nemo login success\n";
+			setLoggedIn();
 			return true;
 		} else {
 			std::cout.rdbuf(oldCoutStreamBuf);
@@ -66,17 +79,29 @@ public:
 	}
 
 	void buy(std::string stockCode, int count, int price) override {
-
+		nemoAPI.purchasingStock(stockCode, count, price);
 	}
 
 	void sell(std::string stockCode, int count, int price) override {
-
+		nemoAPI.sellingStock(stockCode, count, price);
 	}
 
 	int currentPrice(std::string stockCode) override {
 		return getMarketPrice(stockCode, 200);
 	}
+
+	bool getLoggedIn(void) override
+	{
+		return loggedIn;
+	}
+
 private:
+	void setLoggedIn(void) override
+	{
+		loggedIn = true;
+	}
+
+	bool loggedIn = false;
 	NemoAPI nemoAPI;
 };
 
@@ -115,18 +140,32 @@ public:
 
 		return stockBroker->login(ID, password);
 	}
+	int currentPrice(std::string stockCode)
+	{
+		int price = 0;
+		if (isValidRequestWithoutLogin(stockCode) == false)
+		{
+			return price;
+		}
+		stockBroker->currentPrice(stockCode);
+		return price;
+	}
 	void buy(std::string stockCode, int count, int price)
 	{
+		if (isValidRequestWithLogin(stockCode) == false) {
+			return;
+		}
 		stockBroker->buy(stockCode, count, price);
+		return;
 	}
 	void sell(std::string stockCode, int count, int price)
 	{
+		if (isValidRequestWithLogin(stockCode) == false)
+		{
+			return;
+		}
 		stockBroker->sell(stockCode, count, price);
-	}
-
-	int currentPrice(std::string stockCode)
-	{
-		return stockBroker->currentPrice(stockCode);
+		return;
 	}
 
 	void buyNiceTiming(std::string stockCode, int budget)
@@ -160,6 +199,32 @@ public:
 			}
 		} while (timeStampMs < 600);
 	}
+private:
+	bool isValidRequestWithoutLogin(std::string stockCode)
+	{
+		// 추후 구현에 맞춰 수정할 예정
+		if (stockCode == "INVD")
+		{
+			throw std::runtime_error("Invalid Stock Code");
+			return false;
+		}
+
+		return true;
+	}
+
+	bool isValidRequestWithLogin(std::string stockCode)
+	{
+		if (isValidRequestWithoutLogin(stockCode) == false) {
+			return false;
+		}
+
+		if (stockBroker->getLoggedIn() == false)
+		{
+			throw std::runtime_error("Invalid Sequence - Login First");
+			return false;
+		}
+
+		return true;
 protected:
 	StockBroker* stockBroker;
 	std::vector<int> historyPrice;

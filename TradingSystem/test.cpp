@@ -12,6 +12,8 @@ public:
 	MOCK_METHOD(void, buy, (string stockCode, int count, int price), (override));
 	MOCK_METHOD(void, sell, (string stockCode, int count, int price), (override));
 	MOCK_METHOD(int, currentPrice, (string stockCode), (override));
+	MOCK_METHOD(bool, getLoggedIn, (), (override));
+	MOCK_METHOD(void, setLoggedIn, (), (override));
 
 };
 
