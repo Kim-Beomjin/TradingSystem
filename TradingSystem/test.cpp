@@ -1,22 +1,35 @@
 #include <string>
 #include "gmock/gmock.h"
+#include "stockbroker.cpp"
 
 using namespace std;
 using namespace testing;
 
+class MockStockBroker : public StockBroker {
+public:
+	MOCK_METHOD(void, login, (string ID, string password), (override));
+	MOCK_METHOD(void, buy, (string stockCode, int count, int price), (override));
+	MOCK_METHOD(void, sell, (string stockCode, int count, int price), (override));
+	MOCK_METHOD(int, currentPrice, (string stockCode), (override));
+};
+
 class AutoTradingFixture : public Test {
 public:
 	AutoTradingSystem app;
-
+	AutoTradingSystem mockApp{ &mockStockBrocker };
 	const string INVALID_STOCK_BROCKER = "Invalid";
 	const string KIWER_STOCK_BROCKER = "Kiwer";
 	const string NEMO_STOCK_BROCKER = "Nemo";
 
 	const string NO_ID = "";
 	const string NOT_IMPORTANT_ID = "ID123";
+	const string INVALID_PASSWORD = "";
+	const string VALID_PASSWORD = "ValidPassword";
 
-
+	MockStockBroker mockStockBrocker;
 };
+
+
 
 TEST_F(AutoTradingFixture, ThrowInvalidSelection) {
 	try {
@@ -33,7 +46,7 @@ TEST_F(AutoTradingFixture, ThrowKiwerBlankID) {
 	app.selectStockBrocker(KIWER_STOCK_BROCKER);
 
 	try {
-		app.login(NO_ID, 0);
+		app.login(NO_ID, VALID_PASSWORD);
 		FAIL();
 	}
 	catch (runtime_error& e) {
@@ -46,11 +59,47 @@ TEST_F(AutoTradingFixture, ThrowNemoBlankID) {
 	app.selectStockBrocker(NEMO_STOCK_BROCKER);
 
 	try {
-		app.login(NO_ID, 0);
+		app.login(NO_ID, VALID_PASSWORD);
 		FAIL();
 	}
 	catch (runtime_error& e) {
 		EXPECT_EQ(string{ e.what() },
 			string{ "Invalid ID" });
 	}
+}
+
+TEST_F(AutoTradingFixture, KiwerLoginFail) {
+	EXPECT_CALL(mockStockBrocker, login)
+		.Times(0);
+
+	bool result = mockApp.login(NOT_IMPORTANT_ID, INVALID_PASSWORD);
+
+	EXPECT_EQ(false, result);
+}
+
+TEST_F(AutoTradingFixture, KiwerLoginSuccess) {
+	EXPECT_CALL(mockStockBrocker, login)
+		.Times(1);
+
+	bool result = mockApp.login(NOT_IMPORTANT_ID, VALID_PASSWORD);
+
+	EXPECT_EQ(true, result);
+}
+
+TEST_F(AutoTradingFixture, NemoLoginFail) {
+	EXPECT_CALL(mockStockBrocker, login)
+		.Times(0);
+
+	bool result = mockApp.login(NOT_IMPORTANT_ID, INVALID_PASSWORD);
+
+	EXPECT_EQ(false, result);
+}
+
+TEST_F(AutoTradingFixture, NemoLoginSuccess) {
+	EXPECT_CALL(mockStockBrocker, login)
+		.Times(1);
+
+	bool result = mockApp.login(NOT_IMPORTANT_ID, VALID_PASSWORD);
+
+	EXPECT_EQ(true, result);
 }
