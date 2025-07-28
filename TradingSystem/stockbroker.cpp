@@ -1,6 +1,7 @@
 #include "kiwer_api.cpp"
 #include "nemo_api.cpp"
 #include <exception>
+#include <vector>
 #include <sstream>
 
 interface StockBroker {
@@ -41,6 +42,7 @@ public:
 	}
 
 	int currentPrice(std::string stockCode) override {
+		Sleep(200);
 		return kiwerAPI.currentPrice(stockCode);
 	}
 
@@ -85,7 +87,7 @@ public:
 	}
 
 	int currentPrice(std::string stockCode) override {
-		return nemoAPI.getMarketPrice(stockCode, 1);
+		return nemoAPI.getMarketPrice(stockCode, 200);
 	}
 
 	bool getLoggedIn(void) override
@@ -145,7 +147,7 @@ public:
 		{
 			return price;
 		}
-		stockBroker->currentPrice(stockCode);
+		price = stockBroker->currentPrice(stockCode);
 		return price;
 	}
 	void buy(std::string stockCode, int count, int price)
@@ -166,10 +168,42 @@ public:
 		return;
 	}
 
+	void buyNiceTiming(std::string stockCode, int budget)
+	{
+		std::vector<int> historyPrice;
+		int timeStampMs = 0;
+
+		do {
+			int curPrice = currentPrice(stockCode);
+
+			timeStampMs += 200;
+			historyPrice.push_back(curPrice);
+
+			if (historyPrice.size() < 3)
+				continue;
+
+			if (historyPrice.size() > 3)
+				historyPrice.erase(historyPrice.begin());
+
+			int prevPrice = 0, increaseCnt = 0;
+			for (int price : historyPrice) {
+				if (price > prevPrice) {
+					prevPrice = price;
+					increaseCnt++;
+				}
+				else
+					break;
+			}
+
+			if (increaseCnt == 3) {
+				buy(stockCode, budget / curPrice, curPrice);
+			}
+		} while (timeStampMs < 600);
+	}
 private:
 	bool isValidRequestWithoutLogin(std::string stockCode)
 	{
-		// ÃßÈÄ ±¸Çö¿¡ ¸ÂÃç ¼öÁ¤ÇÒ ¿¹Á¤
+		// ì¶”í›„ êµ¬í˜„ì— ë§žì¶° ìˆ˜ì •í•  ì˜ˆì •
 		if (stockCode == "INVD")
 		{
 			throw std::runtime_error("Invalid Stock Code");
@@ -193,7 +227,6 @@ private:
 
 		return true;
 	}
-
 protected:
 	StockBroker* stockBroker;
 };
