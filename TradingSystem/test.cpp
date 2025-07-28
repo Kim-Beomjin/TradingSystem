@@ -10,9 +10,9 @@ public:
 };
 
 class MockStockBroker : public StockBroker {
-	MOCK_METHOD(void, login, (string ID, string password), (override));
-	MOCK_METHOD(void, buy, (string stockCode, int count, int price), (override));
-	MOCK_METHOD(int, currentPrice, (string stockCode), (override));
+	MOCK_METHOD(void, login, (string, string), (override));
+	MOCK_METHOD(void, buy, (string, int, int), (override));
+	MOCK_METHOD(int, currentPrice, (string), (override));
 };
 
 TEST_F(AutoTradingFixture, ThrowInvalidSelection) {
