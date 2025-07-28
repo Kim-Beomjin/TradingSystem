@@ -99,7 +99,8 @@ private:
 	{
 		loggedIn = true;
 	}
-	bool loggedIn;
+
+	bool loggedIn;
 	NemoAPI nemoAPI;
 };
 
@@ -145,7 +146,7 @@ public:
 		{
 			return price;
 		}
-
+		stockBroker->currentPrice(stockCode);
 		return price;
 	}
 	void buy(std::string stockCode, int count, int price)
@@ -153,6 +154,7 @@ public:
 		if (isValidRequestWithLogin(stockCode) == false) {
 			return;
 		}
+		stockBroker->buy(stockCode, count, price);
 		return;
 	}
 	void sell(std::string stockCode, int count, int price)
@@ -161,9 +163,11 @@ public:
 		{
 			return;
 		}
+		stockBroker->sell(stockCode, count, price);
 		return;
 	}
 
+private:
 	bool isValidRequestWithoutLogin(std::string stockCode)
 	{
 		// 추후 구현에 맞춰 수정할 예정
