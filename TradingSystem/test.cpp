@@ -28,10 +28,11 @@ public:
 	const string INVALID_PASSWORD = "";
 	const string VALID_PASSWORD = "ValidPassword";
 
-	MockStockBroker mockStockBrocker;
+	const string INVALID_STOCK_CODE= "INVD";
+	const string VALID_STOCK_CODE = "NVDA";
+
+	NiceMock<MockStockBroker> mockStockBroker;
 };
-
-
 
 TEST_F(AutoTradingFixture, ThrowInvalidSelection) {
 	try {
@@ -105,3 +106,37 @@ TEST_F(AutoTradingFixture, NemoLoginSuccess) {
 
 	EXPECT_EQ(true, result);
 }
+
+TEST_F(AutoTradingFixture, ThrowInvalidStockCode) {
+	try {
+		mockApp.currentPrice(INVALID_STOCK_CODE);
+		FAIL();
+	}
+	catch (runtime_error& e) {
+		EXPECT_EQ(string{ e.what() },
+			string{ "Invalid Stock Code" });
+	}
+}
+
+TEST_F(AutoTradingFixture, ThrowInvalidBuySequence) {
+	try {
+		mockApp.buy(VALID_STOCK_CODE, 1, 100);
+		FAIL();
+	}
+	catch (runtime_error& e) {
+		EXPECT_EQ(string{ e.what() },
+			string{ "Invalid Sequence - Login First" });
+	}
+}
+
+TEST_F(AutoTradingFixture, ThrowInvalidSellSequence) {
+	try {
+		mockApp.sell(VALID_STOCK_CODE, 1, 100);
+		FAIL();
+	}
+	catch (runtime_error& e) {
+		EXPECT_EQ(string{ e.what() },
+			string{ "Invalid Sequence - Login First" });
+	}
+}
+
