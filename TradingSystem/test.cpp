@@ -8,7 +8,7 @@ using namespace testing;
 class MockStockBroker : public StockBroker {
 
 public:
-	MOCK_METHOD(void, login, (string ID, string password), (override));
+	MOCK_METHOD(bool, login, (string ID, string password), (override));
 	MOCK_METHOD(void, buy, (string stockCode, int count, int price), (override));
 	MOCK_METHOD(void, sell, (string stockCode, int count, int price), (override));
 	MOCK_METHOD(int, currentPrice, (string stockCode), (override));
@@ -80,35 +80,35 @@ TEST_F(AutoTradingFixture, ThrowNemoBlankID) {
 	}
 }
 
-TEST_F(AutoTradingFixture, KiwerLoginFail) {
-	EXPECT_CALL(mockStockBroker, login)
-		.Times(0);
-
-	bool result = mockApp.login(NOT_IMPORTANT_ID, INVALID_PASSWORD);
-
-	EXPECT_EQ(false, result);
-}
-
-TEST_F(AutoTradingFixture, KiwerLoginSuccess) {
-	EXPECT_CALL(mockStockBroker, login)
-		.Times(1);
+TEST_F(AutoTradingFixture, KiwerLogin) {
+	app.selectStockBrocker(KIWER_STOCK_BROCKER);
 
 	bool result = mockApp.login(NOT_IMPORTANT_ID, VALID_PASSWORD);
 
 	EXPECT_EQ(true, result);
 }
 
-TEST_F(AutoTradingFixture, NemoLoginFail) {
+TEST_F(AutoTradingFixture, NemoLoginSuccess) {
+	app.selectStockBrocker(NEMO_STOCK_BROCKER);
+
+	bool result = mockApp.login(NOT_IMPORTANT_ID, VALID_PASSWORD);
+
+	EXPECT_EQ(true, result);
+}
+
+TEST_F(AutoTradingFixture, MockLoginFail) {
 	EXPECT_CALL(mockStockBroker, login)
-		.Times(0);
+		.WillRepeatedly(Return(false))
+		.Times(1);
 
 	bool result = mockApp.login(NOT_IMPORTANT_ID, INVALID_PASSWORD);
 
 	EXPECT_EQ(false, result);
 }
 
-TEST_F(AutoTradingFixture, NemoLoginSuccess) {
+TEST_F(AutoTradingFixture, MockLoginSuccess) {
 	EXPECT_CALL(mockStockBroker, login)
+		.WillRepeatedly(Return(true))
 		.Times(1);
 
 	bool result = mockApp.login(NOT_IMPORTANT_ID, VALID_PASSWORD);
