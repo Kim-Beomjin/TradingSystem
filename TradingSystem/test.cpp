@@ -255,6 +255,9 @@ TEST_F(AutoTradingFixture, NiceBuyTestIncreasePrices) {
 		.WillOnce(Return(INCREASE_PRICES[1]))
 		.WillRepeatedly(Return(INCREASE_PRICES[2]));
 
+	EXPECT_CALL(mockStockBroker, getLoggedIn)
+		.WillRepeatedly(Return(true));
+
 	EXPECT_CALL(mockStockBroker, buy)
 		.Times(1);
 
