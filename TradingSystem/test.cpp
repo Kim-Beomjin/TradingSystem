@@ -155,6 +155,8 @@ TEST_F(AutoTradingFixture, NiceBuyTestPriceThreeTimes) {
 		.Times(3);
 
 	mockApp.buyNiceTiming(VALID_STOCK_CODE, STOCK_BUDGET);
+	mockApp.buyNiceTiming(VALID_STOCK_CODE, STOCK_BUDGET);
+	mockApp.buyNiceTiming(VALID_STOCK_CODE, STOCK_BUDGET);
 }
 
 TEST_F(AutoTradingFixture, NiceBuyTestRepeatSamePrices) {
@@ -166,6 +168,8 @@ TEST_F(AutoTradingFixture, NiceBuyTestRepeatSamePrices) {
 	EXPECT_CALL(mockStockBroker, buy)
 		.Times(0);
 
+	mockApp.buyNiceTiming(VALID_STOCK_CODE, STOCK_BUDGET);
+	mockApp.buyNiceTiming(VALID_STOCK_CODE, STOCK_BUDGET);
 	mockApp.buyNiceTiming(VALID_STOCK_CODE, STOCK_BUDGET);
 }
 
@@ -181,6 +185,8 @@ TEST_F(AutoTradingFixture, NiceBuyTestDecreasePrices) {
 		.Times(0);
 
 	mockApp.buyNiceTiming(VALID_STOCK_CODE, STOCK_BUDGET);
+	mockApp.buyNiceTiming(VALID_STOCK_CODE, STOCK_BUDGET);
+	mockApp.buyNiceTiming(VALID_STOCK_CODE, STOCK_BUDGET);
 }
 
 TEST_F(AutoTradingFixture, NiceBuyTestIncreasePrices) {
@@ -194,6 +200,8 @@ TEST_F(AutoTradingFixture, NiceBuyTestIncreasePrices) {
 	EXPECT_CALL(mockStockBroker, buy)
 		.Times(1);
 
+	mockApp.buyNiceTiming(VALID_STOCK_CODE, STOCK_BUDGET);
+	mockApp.buyNiceTiming(VALID_STOCK_CODE, STOCK_BUDGET);
 	mockApp.buyNiceTiming(VALID_STOCK_CODE, STOCK_BUDGET);
 }
 

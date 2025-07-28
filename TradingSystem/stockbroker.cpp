@@ -1,6 +1,7 @@
 #include "kiwer_api.cpp"
 #include "nemo_api.cpp"
 #include <exception>
+#include <vector>
 
 interface StockBroker {
 	virtual void login(std::string ID, std::string password) = 0;
@@ -88,6 +89,33 @@ public:
 		return 0;
 	}
 
+	void buyNiceTiming(std::string stockCode, int budget)
+	{
+		std::vector<int> historyPrice;
+		int curPrice = currentPrice(stockCode);
+
+		historyPrice.push_back(curPrice);
+
+		if (historyPrice.size() < 3)
+			return;
+
+		if (historyPrice.size() > 3)
+			historyPrice.erase(historyPrice.begin());
+
+		int prevPrice = 0, increaseCnt = 0;
+		for (int price : historyPrice) {
+			if (price > prevPrice) {
+				prevPrice = price;
+				increaseCnt++;
+			}
+			else
+				break;
+		}
+
+		if (increaseCnt == 3) {
+			buy(stockCode, budget / curPrice, curPrice);
+		}
+	}
 protected:
 	StockBroker* stockBroker;
 };
