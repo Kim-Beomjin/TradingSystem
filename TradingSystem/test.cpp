@@ -6,11 +6,13 @@ using namespace std;
 using namespace testing;
 
 class MockStockBroker : public StockBroker {
+
 public:
 	MOCK_METHOD(void, login, (string ID, string password), (override));
 	MOCK_METHOD(void, buy, (string stockCode, int count, int price), (override));
 	MOCK_METHOD(void, sell, (string stockCode, int count, int price), (override));
 	MOCK_METHOD(int, currentPrice, (string stockCode), (override));
+
 };
 
 class AutoTradingFixture : public Test {
