@@ -59,8 +59,7 @@ public:
 
 	bool buy(std::string stockCode, int count, int price) override {
 		if (currentID.empty()) {
-			std::cout << "Login First Please\n";
-			return false;
+			throw std::runtime_error("Invalid Sequence - Login First");
 		}
 
 		std::unordered_map<std::string, std::pair<int, int>> stockPriceMap = getStockPriceMapForID(currentID);
@@ -91,7 +90,6 @@ public:
 	bool getLoggedIn(void) override {
 		return loggedIn;
 	}
-
 private:
 	void setLoggedIn(void) override {
 		loggedIn = true;
@@ -124,8 +122,7 @@ public:
 
 	bool buy(std::string stockCode, int count, int price) override {
 		if (currentID.empty()) {
-			std::cout << "Login First Please\n";
-			return false;
+			throw std::runtime_error("Invalid Sequence - Login First");
 		}
 
 		std::unordered_map<std::string, std::pair<int, int>> stockPriceMap = getStockPriceMapForID(currentID);
@@ -300,7 +297,6 @@ private:
 		if (stockBroker->getLoggedIn() == false)
 		{
 			throw std::runtime_error("Invalid Sequence - Login First");
-			return false;
 		}
 
 		return true;
