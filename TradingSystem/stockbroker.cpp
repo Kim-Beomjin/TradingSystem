@@ -12,7 +12,7 @@ interface StockBroker {
 class KiwerStockBroker : public StockBroker, public KiwerAPI {
 public:
 	void login(std::string ID, std::string password) override {
-		kiwerAPI.login(ID, password);
+		login(ID, password);
 	}	
 
 	void buy(std::string stockCode, int count, int price) override {
@@ -26,14 +26,12 @@ public:
 	int currentPrice(std::string stockCode) override {
 		return 0;
 	}
-private:
-	KiwerAPI kiwerAPI;
 };
 
 class NemoStockBroker : public StockBroker, public NemoAPI {
 public:
 	void login(std::string ID, std::string password) override {
-		nemoAPI.certification(ID, password);
+		certification(ID, password);
 	}
 
 	void buy(std::string stockCode, int count, int price) override {
@@ -47,8 +45,6 @@ public:
 	int currentPrice(std::string stockCode) override {
 		return 0;
 	}
-private:
-	NemoAPI nemoAPI;
 };
 
 class AutoTradingSystem {
