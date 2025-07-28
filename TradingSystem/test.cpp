@@ -191,7 +191,8 @@ TEST_F(AutoTradingFixture, ThrowInvalidStockCode) {
 }
 TEST_F(AutoTradingFixture, ThrowInvalidBuySequence) {
 	try {
-		mockApp.buy(VALID_STOCK_CODE, TARGET_STOCK_COUNT, MINIMUM_PRICE);
+		app.selectStockBrocker(NEMO_STOCK_BROCKER);
+		app.buy(VALID_STOCK_CODE, TARGET_STOCK_COUNT, MINIMUM_PRICE);
 		FAIL();
 	}
 	catch (runtime_error& e) {
