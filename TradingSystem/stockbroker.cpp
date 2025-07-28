@@ -91,7 +91,6 @@ public:
 
 	void buyNiceTiming(std::string stockCode, int budget)
 	{
-		std::vector<int> historyPrice;
 		int curPrice = currentPrice(stockCode);
 
 		historyPrice.push_back(curPrice);
@@ -118,4 +117,5 @@ public:
 	}
 protected:
 	StockBroker* stockBroker;
+	std::vector<int> historyPrice;
 };
