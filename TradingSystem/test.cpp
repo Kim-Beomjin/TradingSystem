@@ -83,7 +83,7 @@ TEST_F(AutoTradingFixture, ThrowNemoBlankID) {
 TEST_F(AutoTradingFixture, KiwerLogin) {
 	app.selectStockBrocker(KIWER_STOCK_BROCKER);
 
-	bool result = mockApp.login(NOT_IMPORTANT_ID, VALID_PASSWORD);
+	bool result = app.login(NOT_IMPORTANT_ID, VALID_PASSWORD);
 
 	EXPECT_EQ(true, result);
 }
@@ -91,16 +91,22 @@ TEST_F(AutoTradingFixture, KiwerLogin) {
 TEST_F(AutoTradingFixture, NemoLoginSuccess) {
 	app.selectStockBrocker(NEMO_STOCK_BROCKER);
 
-	bool result = mockApp.login(NOT_IMPORTANT_ID, VALID_PASSWORD);
+	bool result = app.login(NOT_IMPORTANT_ID, VALID_PASSWORD);
 
 	EXPECT_EQ(true, result);
 }
 
 TEST_F(AutoTradingFixture, MockLoginFail) {
 	EXPECT_CALL(mockStockBroker, login)
-		.WillRepeatedly(Return(false))
-		.Times(1);
+		.Times(1)
+		.WillOnce(Return(false));
 
+	bool result = mockApp.login(NOT_IMPORTANT_ID, VALID_PASSWORD);
+
+	EXPECT_EQ(false, result);
+}
+
+TEST_F(AutoTradingFixture, MockLoginFailWithInvalidPassward) {
 	bool result = mockApp.login(NOT_IMPORTANT_ID, INVALID_PASSWORD);
 
 	EXPECT_EQ(false, result);
@@ -108,8 +114,8 @@ TEST_F(AutoTradingFixture, MockLoginFail) {
 
 TEST_F(AutoTradingFixture, MockLoginSuccess) {
 	EXPECT_CALL(mockStockBroker, login)
-		.WillRepeatedly(Return(true))
-		.Times(1);
+		.Times(1)
+		.WillOnce(Return(true));
 
 	bool result = mockApp.login(NOT_IMPORTANT_ID, VALID_PASSWORD);
 
