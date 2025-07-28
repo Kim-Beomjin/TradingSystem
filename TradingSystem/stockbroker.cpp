@@ -170,6 +170,7 @@ public:
 
 	void buyNiceTiming(std::string stockCode, int budget)
 	{
+		std::vector<int> historyPrice;
 		int timeStampMs = 0;
 
 		do {
@@ -227,5 +228,4 @@ private:
 		return true;
 protected:
 	StockBroker* stockBroker;
-	std::vector<int> historyPrice;
 };
