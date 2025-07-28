@@ -25,4 +25,3 @@ TEST_F(AutoTradingFixture, ThrowInvalidSelection) {
 			string{ "Invalid stock broker selection" });
 	}
 }
-
